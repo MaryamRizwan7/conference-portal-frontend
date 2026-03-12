@@ -11,7 +11,7 @@ const RejectedConferences = () => {
   useEffect(() => {
     const fetchRejectedConferences = async () => {
       try {
-        const response = await axios.get("/api/conference/rejected");
+        const response = await axios.get("/api/conference/rejected-conferences");
         setConferences(response.data);
       } catch (error) {
         console.error("Error fetching rejected conferences:", error);

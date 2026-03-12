@@ -9,6 +9,7 @@ import RejectedConferences from "./pages/Admin/RejectedConferences";
 import AllConferences from "./pages/Admin/AllConferences";
 import UpdateConference from "./pages/Admin/UpdateConference";
 import AdminProfile from "./pages/Admin/AdminProfile";
+import SendInvite from "./pages/Admin/SendInvite";
 import AdminPrivateRoute from "./routes/adminAuth";
 import Pagenotfound from "./pages/Pagenotfound";
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="update-conference" element={<UpdateConference />} />
           <Route path="pending-requests" element={<ConferenceRequests />} />
           <Route path="rejected-conferences" element={<RejectedConferences />} />
+          <Route path="send-invite" element={<SendInvite />} />
         </Route>
       </Routes>
     </>
