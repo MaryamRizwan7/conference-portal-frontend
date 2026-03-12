@@ -109,7 +109,7 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-100">
         {isExpanded && (
           <p className="text-xs text-gray-400 text-center font-medium">
-            Confizio Admin v1.0
+            ConForum Admin v1.0
           </p>
         )}
       </div>

@@ -22,7 +22,7 @@ const AllConferences = () => {
   }, []);
 
   return (
-    <Layout title="Confizio Admin - All Conferences">
+    <Layout title="ConForum Admin - All Conferences">
       <div className="relative flex min-h-screen bg-gray-50">
         <Sidebar />
         <div className="flex-1 p-8">

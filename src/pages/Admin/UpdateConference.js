@@ -98,7 +98,7 @@ const UpdateConference = () => {
   const labelClass = "block text-sm font-bold text-gray-700 mb-1";
 
   return (
-    <Layout title="Confizio Admin - Edit Conference">
+    <Layout title="ConForum Admin - Edit Conference">
       <div className="relative flex min-h-screen bg-gray-50">
         <Sidebar />
         <div className="flex-1 p-8">

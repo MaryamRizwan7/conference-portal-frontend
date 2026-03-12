@@ -35,7 +35,7 @@ const RejectedConferences = () => {
   };
 
   return (
-    <Layout title="Confizio Admin - Rejected Conferences">
+    <Layout title="ConForum Admin - Rejected Conferences">
       <div className="relative flex min-h-screen bg-gray-50">
         <Sidebar />
         <div className="flex-1 p-8">

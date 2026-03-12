@@ -24,7 +24,7 @@ const Header = () => {
             </svg>
           </div>
           <NavLink to="/admindashboard/admin-dashboard" className="text-white text-xl font-extrabold tracking-wide">
-            Confizio <span className="text-red-200 font-medium">Admin</span>
+            ConForum <span className="text-red-200 font-medium">Admin</span>
           </NavLink>
         </div>
 

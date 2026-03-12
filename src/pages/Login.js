@@ -44,7 +44,7 @@ const Login = () => {
   };
 
   return (
-    <Layout title="Confizio - Admin Login">
+    <Layout title="ConForum - Admin Login">
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
         <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-2xl border border-gray-100">
           <div className="text-center">
@@ -66,7 +66,7 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
-                  placeholder="admin@confizio.com"
+                  placeholder="admin@conforum.com"
                   {...register("email", {
                     required: "Email is required",
                     pattern: {

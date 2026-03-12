@@ -46,7 +46,7 @@ const ConferenceRequests = () => {
   };
 
   return (
-    <Layout title="Confizio Admin - Conference Requests">
+    <Layout title="ConForum Admin - Conference Requests">
       <div className="relative flex min-h-screen bg-gray-50">
         <Sidebar />
         <div className="flex-1 p-8">
