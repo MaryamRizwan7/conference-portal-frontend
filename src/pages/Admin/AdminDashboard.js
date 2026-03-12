@@ -1,53 +1,304 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/AdminSidebar";
 import Layout from "../../components/Layout";
+import axios from "axios";
+
+const STATUS_STYLES = {
+  approved: "bg-green-50 text-green-800",
+  pending: "bg-amber-50 text-amber-800",
+  rejected: "bg-red-50 text-red-800",
+};
+
+const StatCard = ({ label, value, sub, subColor }) => (
+  <div className="bg-white rounded-xl border border-gray-100 p-5">
+    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+      {label}
+    </p>
+    <p className={`text-3xl font-extrabold ${subColor ?? "text-gray-900"}`}>
+      {value !== null ? value : (
+        <span className="inline-block w-12 h-7 bg-gray-100 rounded animate-pulse" />
+      )}
+    </p>
+    <p className={`text-xs mt-1 font-medium ${subColor ?? "text-gray-400"}`}>
+      {sub}
+    </p>
+  </div>
+);
+
+const DonutChart = ({ approved, pending, rejected }) => {
+  const total = approved + pending + rejected;
+  if (total === 0) return null;
+
+  const r = 40;
+  const circ = 2 * Math.PI * r;
+
+  const approvedFrac = approved / total;
+  const pendingFrac = pending / total;
+  const rejectedFrac = rejected / total;
+
+  const approvedDash = approvedFrac * circ;
+  const pendingDash = pendingFrac * circ;
+  const rejectedDash = rejectedFrac * circ;
+
+  const approvedOffset = 0;
+  const pendingOffset = -approvedDash;
+  const rejectedOffset = -(approvedDash + pendingDash);
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <svg width="120" height="120" viewBox="0 0 110 110">
+        <circle cx="55" cy="55" r={r} fill="none" stroke="#EAF3DE" strokeWidth="18"
+          transform="rotate(-90 55 55)"
+          strokeDasharray={`${approvedDash} ${circ - approvedDash}`}
+          strokeDashoffset={approvedOffset}
+        />
+        <circle cx="55" cy="55" r={r} fill="none" stroke="#FAEEDA" strokeWidth="18"
+          transform="rotate(-90 55 55)"
+          strokeDasharray={`${pendingDash} ${circ - pendingDash}`}
+          strokeDashoffset={pendingOffset}
+        />
+        <circle cx="55" cy="55" r={r} fill="none" stroke="#9B0020" strokeWidth="18"
+          transform="rotate(-90 55 55)"
+          strokeDasharray={`${rejectedDash} ${circ - rejectedDash}`}
+          strokeDashoffset={rejectedOffset}
+        />
+        <text x="55" y="51" textAnchor="middle" fontSize="20" fontWeight="700" fill="#111">{total}</text>
+        <text x="55" y="65" textAnchor="middle" fontSize="10" fill="#888">total</text>
+      </svg>
+
+      <div className="w-full space-y-2">
+        {[
+          { label: "Approved", value: approved, color: "bg-green-700" },
+          { label: "Pending", value: pending, color: "bg-amber-500" },
+          { label: "Rejected", value: rejected, color: "bg-red-800" },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="flex items-center gap-2 text-sm">
+            <span className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${color}`} />
+            <span className="text-gray-500">{label}</span>
+            <span className="ml-auto font-bold text-gray-800">{value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const AdminDashboard = () => {
+  const [stats, setStats] = useState({ approved: null, pending: null, rejected: null });
+  const [recent, setRecent] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [approvedRes, pendingRes, rejectedRes] = await Promise.all([
+          axios.get("/api/conference/all-conferences"),
+          axios.get("/api/conference/pending"),
+          axios.get("/api/conference/rejected-conferences"),
+        ]);
+
+        const approved = approvedRes.data ?? [];
+        const pending = pendingRes.data ?? [];
+        const rejected = rejectedRes.data ?? [];
+
+        setStats({
+          approved: approved.length,
+          pending: pending.length,
+          rejected: rejected.length,
+        });
+
+        const all = [
+          ...pending.map((c) => ({ ...c, status: "pending" })),
+          ...approved.map((c) => ({ ...c, status: "approved" })),
+          ...rejected.map((c) => ({ ...c, status: "rejected" })),
+        ];
+
+        const sorted = all
+          .filter((c) => c.createdAt)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 6);
+
+        setRecent(sorted);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAll();
+  }, []);
+
+  const total =
+    (stats.approved ?? 0) + (stats.pending ?? 0) + (stats.rejected ?? 0);
+
   return (
     <Layout title="Administrator Control Center">
       <div className="relative flex min-h-screen bg-gray-50">
         <Sidebar />
-        <div className="flex-1 p-8 lg:p-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="relative overflow-hidden rounded-[3rem] bg-gray-900 shadow-2xl min-h-[400px] flex items-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-red-950 via-red-900/40 to-transparent"></div>
-              <div className="relative z-10 p-12 lg:p-20 max-w-2xl">
-                <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-6 shadow-lg shadow-red-900/40">
-                  System Superuser
-                </span>
-                <h1 className="text-5xl lg:text-7xl font-extrabold text-white tracking-tight mb-6">
-                  Admin <span className="text-red-500">Dashboard</span>
+
+        <div className="flex-1 p-8 lg:p-10">
+          <div className="max-w-6xl mx-auto">
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                  Admin Dashboard
                 </h1>
-                <p className="text-lg lg:text-xl text-gray-300 font-medium leading-relaxed mb-10">
-                  Welcome to the command center. Oversee global platform operations, approve institutional requests, and manage user security protocols.
+                <p className="text-sm text-gray-400 mt-1">
+                  Platform overview — all conference requests
                 </p>
-                <div className="flex items-center space-x-6">
-                  <div className="h-1 w-24 bg-red-600 rounded-full"></div>
-                  <span className="text-white font-bold uppercase tracking-widest text-xs">Total Control Platform</span>
-                </div>
               </div>
+              <span
+                className="px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-widest"
+                style={{ backgroundColor: "#9B0020" }}
+              >
+                System Superuser
+              </span>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Stat Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <StatCard
+                label="Total conferences"
+                value={stats.approved !== null ? total : null}
+                sub="All time"
+                subColor="text-gray-400"
+              />
+              <StatCard
+                label="Pending requests"
+                value={stats.pending}
+                sub="Awaiting review"
+                subColor="text-amber-600"
+              />
+              <StatCard
+                label="Approved"
+                value={stats.approved}
+                sub="Active conferences"
+                subColor="text-green-700"
+              />
+              <StatCard
+                label="Rejected"
+                value={stats.rejected}
+                sub="Not approved"
+                subColor="text-red-700"
+              />
+            </div>
+
+            {/* Table + Donut */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              {/* Recent Requests Table */}
+              <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                  <h2 className="text-sm font-bold text-gray-800">
+                    Recent conference requests
+                  </h2>
+                  <a
+                    href="/admindashboard/pending-requests"
+                    className="text-xs font-bold"
+                    style={{ color: "#9B0020" }}
+                  >
+                    View all
+                  </a>
+                </div>
+
+                {loading ? (
+                  <div className="flex justify-center py-12">
+                    <div
+                      className="w-8 h-8 rounded-full border-4 border-t-transparent animate-spin"
+                      style={{ borderColor: "#9B0020", borderTopColor: "transparent" }}
+                    />
+                  </div>
+                ) : (
+                  <table className="min-w-full">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Conference</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Location</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Submitted</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {recent.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-400">
+                            No recent conferences found.
+                          </td>
+                        </tr>
+                      ) : (
+                        recent.map((c, i) => (
+                          <tr key={i} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-3">
+                              <p className="text-sm font-bold text-gray-900">{c.acronym}</p>
+                              <p className="text-xs text-gray-400 truncate max-w-[160px]">{c.conferenceName}</p>
+                            </td>
+                            <td className="px-6 py-3 text-sm text-gray-500">
+                              {c.city}, {c.country}
+                            </td>
+                            <td className="px-6 py-3 text-sm text-gray-500">
+                              {c.createdAt ? c.createdAt.slice(0, 10) : "-"}
+                            </td>
+                            <td className="px-6 py-3">
+                              <span
+                                className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-gray-100 text-gray-600"}`}
+                              >
+                                {c.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Donut Chart */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-sm font-bold text-gray-800 mb-6">
+                  Status breakdown
+                </h2>
+                {stats.approved !== null ? (
+                  <DonutChart
+                    approved={stats.approved}
+                    pending={stats.pending}
+                    rejected={stats.rejected}
+                  />
+                ) : (
+                  <div className="flex justify-center py-8">
+                    <div
+                      className="w-8 h-8 rounded-full border-4 animate-spin"
+                      style={{ borderColor: "#9B0020", borderTopColor: "transparent" }}
+                    />
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Quick Links */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { label: "Pending Requests", link: "/admindashboard/pending-requests", icon: "M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z", color: "bg-amber-50 text-amber-700" },
-                { label: "Approved Conferences", link: "/admindashboard/all-conferences", icon: "m4.5 12.75 6 6 9-13.5", color: "bg-green-50 text-green-700" },
-                { label: "Rejected Conferences", link: "/admindashboard/rejected-conferences", icon: "M6 18 18 6M6 6l12 12", color: "bg-red-50 text-red-700" },
-              ].map((card, i) => (
+                { label: "Review pending requests", href: "/admindashboard/pending-requests", count: stats.pending, color: "text-amber-600" },
+                { label: "View approved conferences", href: "/admindashboard/all-conferences", count: stats.approved, color: "text-green-700" },
+                { label: "View rejected conferences", href: "/admindashboard/rejected-conferences", count: stats.rejected, color: "text-red-700" },
+              ].map((link, i) => (
                 <a
                   key={i}
-                  href={card.link}
-                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 flex items-center space-x-4"
+                  href={link.href}
+                  className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:shadow-sm transition-all"
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${card.color}`}>
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d={card.icon} />
-                    </svg>
-                  </div>
-                  <span className="font-bold text-gray-800 text-sm">{card.label}</span>
+                  <span className="text-sm font-bold text-gray-700">{link.label}</span>
+                  <span className={`text-lg font-extrabold ${link.color}`}>
+                    {link.count ?? "—"}
+                  </span>
                 </a>
               ))}
             </div>
+
           </div>
         </div>
       </div>
