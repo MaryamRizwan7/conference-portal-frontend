@@ -15,7 +15,10 @@ const Header = () => {
   };
 
   return (
-    <nav style={{ backgroundColor: "#9B0020" }} className="px-6 py-4 shadow-lg">
+    <nav
+      className="px-6 py-4 shadow-lg"
+      style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
@@ -24,13 +27,13 @@ const Header = () => {
             </svg>
           </div>
           <NavLink to="/admindashboard/admin-dashboard" className="text-white text-xl font-extrabold tracking-wide">
-            ConForum <span className="text-red-200 font-medium">Admin</span>
+            ConForum <span className="text-teal-200 font-medium">Admin</span>
           </NavLink>
         </div>
 
         {auth?.user ? (
           <div className="flex items-center space-x-4">
-            <span className="text-red-100 text-sm font-medium hidden md:block">
+            <span className="text-teal-100 text-sm font-medium hidden md:block">
               Welcome, <span className="text-white font-bold">{auth.user.name}</span>
             </span>
             <button

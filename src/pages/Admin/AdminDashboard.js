@@ -32,13 +32,9 @@ const DonutChart = ({ approved, pending, rejected }) => {
   const r = 40;
   const circ = 2 * Math.PI * r;
 
-  const approvedFrac = approved / total;
-  const pendingFrac = pending / total;
-  const rejectedFrac = rejected / total;
-
-  const approvedDash = approvedFrac * circ;
-  const pendingDash = pendingFrac * circ;
-  const rejectedDash = rejectedFrac * circ;
+  const approvedDash = (approved / total) * circ;
+  const pendingDash = (pending / total) * circ;
+  const rejectedDash = (rejected / total) * circ;
 
   const approvedOffset = 0;
   const pendingOffset = -approvedDash;
@@ -57,7 +53,7 @@ const DonutChart = ({ approved, pending, rejected }) => {
           strokeDasharray={`${pendingDash} ${circ - pendingDash}`}
           strokeDashoffset={pendingOffset}
         />
-        <circle cx="55" cy="55" r={r} fill="none" stroke="#9B0020" strokeWidth="18"
+        <circle cx="55" cy="55" r={r} fill="none" stroke="#4B707A" strokeWidth="18"
           transform="rotate(-90 55 55)"
           strokeDasharray={`${rejectedDash} ${circ - rejectedDash}`}
           strokeDashoffset={rejectedOffset}
@@ -70,7 +66,7 @@ const DonutChart = ({ approved, pending, rejected }) => {
         {[
           { label: "Approved", value: approved, color: "bg-green-700" },
           { label: "Pending", value: pending, color: "bg-amber-500" },
-          { label: "Rejected", value: rejected, color: "bg-red-800" },
+          { label: "Rejected", value: rejected, color: "bg-teal-700" },
         ].map(({ label, value, color }) => (
           <div key={label} className="flex items-center gap-2 text-sm">
             <span className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${color}`} />
@@ -129,8 +125,7 @@ const AdminDashboard = () => {
     fetchAll();
   }, []);
 
-  const total =
-    (stats.approved ?? 0) + (stats.pending ?? 0) + (stats.rejected ?? 0);
+  const total = (stats.approved ?? 0) + (stats.pending ?? 0) + (stats.rejected ?? 0);
 
   return (
     <Layout title="Administrator Control Center">
@@ -150,9 +145,10 @@ const AdminDashboard = () => {
                   Platform overview — all conference requests
                 </p>
               </div>
+
               <span
                 className="px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-widest"
-                style={{ backgroundColor: "#9B0020" }}
+                style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
               >
                 System Superuser
               </span>
@@ -160,45 +156,25 @@ const AdminDashboard = () => {
 
             {/* Stat Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <StatCard
-                label="Total conferences"
-                value={stats.approved !== null ? total : null}
-                sub="All time"
-                subColor="text-gray-400"
-              />
-              <StatCard
-                label="Pending requests"
-                value={stats.pending}
-                sub="Awaiting review"
-                subColor="text-amber-600"
-              />
-              <StatCard
-                label="Approved"
-                value={stats.approved}
-                sub="Active conferences"
-                subColor="text-green-700"
-              />
-              <StatCard
-                label="Rejected"
-                value={stats.rejected}
-                sub="Not approved"
-                subColor="text-red-700"
-              />
+              <StatCard label="Total conferences" value={stats.approved !== null ? total : null} sub="All time" />
+              <StatCard label="Pending requests" value={stats.pending} sub="Awaiting review" subColor="text-amber-600" />
+              <StatCard label="Approved" value={stats.approved} sub="Active conferences" subColor="text-green-700" />
+              <StatCard label="Rejected" value={stats.rejected} sub="Not approved" subColor="text-teal-700" />
             </div>
 
             {/* Table + Donut */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-              {/* Recent Requests Table */}
+              {/* Table */}
               <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                   <h2 className="text-sm font-bold text-gray-800">
                     Recent conference requests
                   </h2>
+
                   <a
                     href="/admindashboard/pending-requests"
-                    className="text-xs font-bold"
-                    style={{ color: "#9B0020" }}
+                    className="text-xs font-bold text-teal-700 hover:text-teal-800"
                   >
                     View all
                   </a>
@@ -206,21 +182,19 @@ const AdminDashboard = () => {
 
                 {loading ? (
                   <div className="flex justify-center py-12">
-                    <div
-                      className="w-8 h-8 rounded-full border-4 border-t-transparent animate-spin"
-                      style={{ borderColor: "#9B0020", borderTopColor: "transparent" }}
-                    />
+                    <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
                   </div>
                 ) : (
                   <table className="min-w-full">
                     <thead>
                       <tr className="bg-gray-50">
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Conference</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Location</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Submitted</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Conference</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Location</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Submitted</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
                       </tr>
                     </thead>
+
                     <tbody className="divide-y divide-gray-50">
                       {recent.length === 0 ? (
                         <tr>
@@ -230,21 +204,22 @@ const AdminDashboard = () => {
                         </tr>
                       ) : (
                         recent.map((c, i) => (
-                          <tr key={i} className="hover:bg-gray-50 transition-colors">
+                          <tr key={i} className="hover:bg-gray-50">
                             <td className="px-6 py-3">
                               <p className="text-sm font-bold text-gray-900">{c.acronym}</p>
-                              <p className="text-xs text-gray-400 truncate max-w-[160px]">{c.conferenceName}</p>
+                              <p className="text-xs text-gray-400">{c.conferenceName}</p>
                             </td>
+
                             <td className="px-6 py-3 text-sm text-gray-500">
                               {c.city}, {c.country}
                             </td>
+
                             <td className="px-6 py-3 text-sm text-gray-500">
                               {c.createdAt ? c.createdAt.slice(0, 10) : "-"}
                             </td>
+
                             <td className="px-6 py-3">
-                              <span
-                                className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-gray-100 text-gray-600"}`}
-                              >
+                              <span className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[c.status]}`}>
                                 {c.status}
                               </span>
                             </td>
@@ -256,11 +231,12 @@ const AdminDashboard = () => {
                 )}
               </div>
 
-              {/* Donut Chart */}
+              {/* Donut */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h2 className="text-sm font-bold text-gray-800 mb-6">
                   Status breakdown
                 </h2>
+
                 {stats.approved !== null ? (
                   <DonutChart
                     approved={stats.approved}
@@ -269,14 +245,10 @@ const AdminDashboard = () => {
                   />
                 ) : (
                   <div className="flex justify-center py-8">
-                    <div
-                      className="w-8 h-8 rounded-full border-4 animate-spin"
-                      style={{ borderColor: "#9B0020", borderTopColor: "transparent" }}
-                    />
+                    <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
                   </div>
                 )}
               </div>
-
             </div>
 
             {/* Quick Links */}
@@ -284,12 +256,12 @@ const AdminDashboard = () => {
               {[
                 { label: "Review pending requests", href: "/admindashboard/pending-requests", count: stats.pending, color: "text-amber-600" },
                 { label: "View approved conferences", href: "/admindashboard/all-conferences", count: stats.approved, color: "text-green-700" },
-                { label: "View rejected conferences", href: "/admindashboard/rejected-conferences", count: stats.rejected, color: "text-red-700" },
+                { label: "View rejected conferences", href: "/admindashboard/rejected-conferences", count: stats.rejected, color: "text-teal-700" },
               ].map((link, i) => (
                 <a
                   key={i}
                   href={link.href}
-                  className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:shadow-sm transition-all"
+                  className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:shadow-sm hover:border-teal-100 transition-all"
                 >
                   <span className="text-sm font-bold text-gray-700">{link.label}</span>
                   <span className={`text-lg font-extrabold ${link.color}`}>

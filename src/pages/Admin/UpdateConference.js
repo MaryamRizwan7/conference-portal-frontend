@@ -60,7 +60,8 @@ const UpdateConference = () => {
     if (id) {
       getSingleConference(id);
     } else {
-      ["conferenceName", "acronym", "webPage", "venue", "city", "country", "startDate", "endDate", "abstractDeadline", "submissionDeadline", "primaryArea", "secondaryArea", "topics"].forEach((field) => setValue(field, ""));
+      ["conferenceName", "acronym", "webPage", "venue", "city", "country", "startDate", "endDate", "abstractDeadline", "submissionDeadline", "primaryArea", "secondaryArea", "topics"]
+        .forEach((field) => setValue(field, ""));
     }
   };
 
@@ -94,7 +95,7 @@ const UpdateConference = () => {
 
   const cancelDelete = () => setIsModalVisible(false);
 
-  const inputClass = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-200 focus:bg-white focus:outline-none transition-all duration-200 shadow-sm hover:border-gray-300 text-sm";
+  const inputClass = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-200 focus:bg-white focus:outline-none transition-all duration-200 shadow-sm hover:border-gray-300 text-sm";
   const labelClass = "block text-sm font-bold text-gray-700 mb-1";
 
   return (
@@ -184,8 +185,8 @@ const UpdateConference = () => {
                 <div className="flex items-center space-x-4 pt-4">
                   <button
                     type="submit"
-                    className="px-8 py-3 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-900/20"
-                    style={{ backgroundColor: "#9B0020" }}
+                    className="px-8 py-3 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-teal-900/20"
+                    style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                   >
                     Update Conference
                   </button>

@@ -7,7 +7,7 @@ const Sidebar = () => {
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
   const navItems = [
-     {
+    {
       to: "/admindashboard/admin-dashboard",
       label: "Dashboard",
       icon: "M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z",
@@ -17,7 +17,6 @@ const Sidebar = () => {
       label: "Profile",
       icon: "M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z",
     },
-   
     {
       to: "/admindashboard/pending-requests",
       label: "Requests",
@@ -49,36 +48,42 @@ const Sidebar = () => {
     <div
       className={`flex flex-col ${
         isExpanded ? "w-72" : "w-24"
-      } bg-white min-h-screen transition-all duration-500 border-r border-gray-100 shadow-xl overflow-hidden`}
+      } min-h-screen transition-all duration-500 border-r border-teal-100 shadow-xl overflow-hidden`}
+      style={{ background: "#F8FAF9" }}
     >
+      {/* Header */}
       <div
         className="flex items-center justify-between h-20 px-6"
-        style={{ backgroundColor: "#9B0020" }}
+        style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
       >
         <span
-          className={`text-white font-extrabold text-lg tracking-wider transition-opacity duration-300 ${
-            !isExpanded && "hidden opacity-0"
+          className={`text-white font-extrabold text-sm tracking-widest uppercase transition-opacity duration-300 ${
+            !isExpanded ? "hidden opacity-0" : ""
           }`}
         >
-          ADMIN PANEL
+          Admin Panel
         </span>
         <button
           onClick={toggleSidebar}
           className="text-white hover:bg-white/10 p-2 rounded-full transition-colors"
         >
           {isExpanded ? (
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            <svg className="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <svg className="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           )}
         </button>
       </div>
 
-      <nav className="flex flex-col flex-1 p-4 space-y-2 overflow-y-auto">
+      {/* Teal accent line */}
+      <div style={{ height: 3, background: "linear-gradient(90deg, #4B707A, #7F9C8E, #C5D9A4)" }} />
+
+      {/* Nav */}
+      <nav className="flex flex-col flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item, idx) => (
           <NavLink
             key={idx}
@@ -86,8 +91,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center p-3 rounded-xl transition-all duration-300 group ${
                 isActive
-                  ? "bg-red-50 text-red-700 shadow-sm"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-red-600"
+                  ? "bg-teal-50 text-teal-700 shadow-sm border border-teal-100"
+                  : "text-gray-500 hover:bg-teal-50 hover:text-teal-600"
               }`
             }
           >
@@ -98,7 +103,7 @@ const Sidebar = () => {
               strokeWidth="2"
               stroke="currentColor"
               className={`size-6 group-hover:scale-110 transition-transform ${
-                !isExpanded && "mx-auto"
+                !isExpanded ? "mx-auto" : ""
               }`}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
@@ -112,13 +117,14 @@ const Sidebar = () => {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
-        {isExpanded && (
-          <p className="text-xs text-gray-400 text-center font-medium">
-            ConForum Admin v1.0
+      {/* Bottom strip */}
+      {isExpanded && (
+        <div className="p-4 border-t border-teal-100">
+          <p className="text-xs font-bold tracking-widest uppercase text-center" style={{ color: "#A8C4B8" }}>
+            ConForum Admin
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

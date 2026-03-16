@@ -32,14 +32,7 @@ const SendInvite = () => {
     setSelectedConference(conference);
     setOrganizerEmail("");
     setMessage(
-      `Hello,
-
-You have been invited to manage the conference "${conference.conferenceName}".
-
-Please login to ConForum to start managing the conference.
-
-Regards,
-ConForum Team`
+      `Hello,\n\nYou have been invited to manage the conference "${conference.conferenceName}".\n\nPlease login to ConForum to start managing the conference.\n\nRegards,\nConForum Team`
     );
     setModalOpen(true);
   };
@@ -53,30 +46,16 @@ ConForum Team`
 
   const handleSendInvite = async (e) => {
     e.preventDefault();
-
-    if (!organizerEmail) {
-      toast.error("Please enter the organizer's email.");
-      return;
-    }
-
-    if (!message) {
-      toast.error("Please enter a message.");
-      return;
-    }
-
+    if (!organizerEmail) { toast.error("Please enter the organizer's email."); return; }
+    if (!message) { toast.error("Please enter a message."); return; }
     setSending(true);
-
     try {
       await axios.post("/api/conference/send-invite", {
         conferenceId: selectedConference._id,
         organizerEmail,
         message,
       });
-
-      toast.success(
-        `Invite sent to ${organizerEmail} for "${selectedConference.conferenceName}"!`
-      );
-
+      toast.success(`Invite sent to ${organizerEmail} for "${selectedConference.conferenceName}"!`);
       closeModal();
     } catch (error) {
       console.error("Error sending invite:", error);
@@ -103,7 +82,7 @@ ConForum Team`
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="w-12 h-12 border-4 border-red-100 border-t-red-600 animate-spin rounded-full"></div>
+              <div className="w-12 h-12 border-4 border-teal-100 border-t-teal-600 animate-spin rounded-full" />
             </div>
           ) : conferences.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
@@ -117,57 +96,36 @@ ConForum Team`
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">
-                        Conference
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">
-                        Location
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">
-                        Start Date
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase">
-                        Action
-                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Conference</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Location</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Start Date</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase">Action</th>
                     </tr>
                   </thead>
-
                   <tbody className="bg-white divide-y divide-gray-100">
                     {conferences.map((conference, index) => (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
-                          <div className="text-sm font-bold text-gray-900">
-                            {conference.acronym}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {conference.conferenceName}
-                          </div>
+                          <div className="text-sm font-bold text-gray-900">{conference.acronym}</div>
+                          <div className="text-sm text-gray-500">{conference.conferenceName}</div>
                         </td>
-
                         <td className="px-6 py-4 text-sm text-gray-600">
                           {conference.city}, {conference.country}
                         </td>
-
                         <td className="px-6 py-4 text-sm text-gray-600">
-                          {conference.startDate
-                            ? conference.startDate.slice(0, 10)
-                            : "-"}
+                          {conference.startDate ? conference.startDate.slice(0, 10) : "-"}
                         </td>
-
                         <td className="px-6 py-4">
                           <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 uppercase">
                             {conference.status || "approved"}
                           </span>
                         </td>
-
                         <td className="px-6 py-4 text-center">
                           <button
                             onClick={() => openModal(conference)}
-                            className="px-4 py-2 text-xs font-bold rounded-lg text-white"
-                            style={{ backgroundColor: "#9B0020" }}
+                            className="px-4 py-2 text-xs font-bold rounded-lg text-white transition-all duration-200 hover:opacity-90"
+                            style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                           >
                             Send Invite
                           </button>
@@ -182,28 +140,33 @@ ConForum Team`
         </div>
       </div>
 
+      {/* Modal */}
       {modalOpen && selectedConference && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100">
+
+            {/* Modal Header */}
+            <div
+              className="h-2 -mx-8 -mt-8 mb-6 rounded-t-2xl"
+              style={{ background: "linear-gradient(90deg, #4B707A, #7F9C8E, #C5D9A4)" }}
+            />
 
             <h2 className="text-xl font-extrabold text-gray-900 mb-6">
               Send Organizer Invite
             </h2>
 
             <form onSubmit={handleSendInvite} className="space-y-5">
-
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">
                   Organizer Email
                 </label>
-
                 <input
                   type="email"
                   value={organizerEmail}
                   onChange={(e) => setOrganizerEmail(e.target.value)}
                   placeholder="organizer@example.com"
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-200 focus:outline-none transition-all"
                 />
               </div>
 
@@ -211,35 +174,31 @@ ConForum Team`
                 <label className="block text-sm font-bold text-gray-700 mb-1">
                   Message
                 </label>
-
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows="5"
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none"
-                ></textarea>
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-teal-200 focus:outline-none transition-all"
+                />
               </div>
 
               <div className="flex gap-3 pt-2">
-
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex-1 py-3 text-white text-sm font-bold rounded-xl"
-                  style={{ backgroundColor: "#9B0020" }}
+                  className="flex-1 py-3 text-white text-sm font-bold rounded-xl transition-all duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                 >
                   {sending ? "Sending..." : "Send Invite"}
                 </button>
-
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-3 text-gray-700 text-sm font-bold bg-gray-100 rounded-xl"
+                  className="flex-1 py-3 text-gray-700 text-sm font-bold bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
                 >
                   Cancel
                 </button>
-
               </div>
             </form>
           </div>

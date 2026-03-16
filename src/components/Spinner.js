@@ -20,10 +20,10 @@ const Spinner = ({ path = "login" }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-white">
       <div className="relative">
-        <div className="w-20 h-20 border-4 border-red-100 rounded-full"></div>
+        <div className="w-20 h-20 border-4 border-teal-100 rounded-full"></div>
         <div
           className="absolute top-0 left-0 w-20 h-20 border-4 border-t-transparent animate-spin rounded-full"
-          style={{ borderTopColor: "#9B0020" }}
+          style={{ borderColor: "#4B707A", borderTopColor: "transparent" }}
         ></div>
       </div>
       <div className="mt-8 text-center">
@@ -32,7 +32,7 @@ const Spinner = ({ path = "login" }) => {
         </h1>
         <p className="mt-2 text-gray-500 font-medium">
           Redirecting you in{" "}
-          <span className="text-red-600 font-bold">{count}</span> second
+          <span className="font-bold" style={{ color: "#4B707A" }}>{count}</span> second
           {count !== 1 ? "s" : ""}...
         </p>
       </div>

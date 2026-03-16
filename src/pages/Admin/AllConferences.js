@@ -27,7 +27,7 @@ const AllConferences = () => {
         <Sidebar />
         <div className="flex-1 p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Approved Conferences</h1>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">All Conferences</h1>
             <p className="mt-2 text-gray-500 font-medium">All conferences that have been approved on the platform.</p>
           </div>
 
