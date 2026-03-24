@@ -17,7 +17,7 @@ const Sidebar = () => {
       label: "Profile",
       icon: "M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z",
     },
-     {
+    {
       to: "/admindashboard/create-conference",  // 👈 NEW
       label: "Create Conf",
       icon: "M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
@@ -44,16 +44,15 @@ const Sidebar = () => {
     },
     {
       to: "/admindashboard/send-invite",
-      label: "Send Invite",
+      label: "Send Organizer",
       icon: "M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75",
     },
   ];
 
   return (
     <div
-      className={`flex flex-col ${
-        isExpanded ? "w-72" : "w-24"
-      } min-h-screen transition-all duration-500 border-r border-teal-100 shadow-xl overflow-hidden`}
+      className={`flex flex-col ${isExpanded ? "w-72" : "w-24"
+        } min-h-screen transition-all duration-500 border-r border-teal-100 shadow-xl overflow-hidden`}
       style={{ background: "#F8FAF9" }}
     >
       {/* Header */}
@@ -62,9 +61,8 @@ const Sidebar = () => {
         style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
       >
         <span
-          className={`text-white font-extrabold text-sm tracking-widest uppercase transition-opacity duration-300 ${
-            !isExpanded ? "hidden opacity-0" : ""
-          }`}
+          className={`text-white font-extrabold text-sm tracking-widest uppercase transition-opacity duration-300 ${!isExpanded ? "hidden opacity-0" : ""
+            }`}
         >
           Admin Panel
         </span>
@@ -94,10 +92,9 @@ const Sidebar = () => {
             key={idx}
             to={item.to}
             className={({ isActive }) =>
-              `flex items-center p-3 rounded-xl transition-all duration-300 group ${
-                isActive
-                  ? "bg-teal-50 text-teal-700 shadow-sm border border-teal-100"
-                  : "text-gray-500 hover:bg-teal-50 hover:text-teal-600"
+              `flex items-center p-3 rounded-xl transition-all duration-300 group ${isActive
+                ? "bg-teal-50 text-teal-700 shadow-sm border border-teal-100"
+                : "text-gray-500 hover:bg-teal-50 hover:text-teal-600"
               }`
             }
           >
@@ -107,9 +104,8 @@ const Sidebar = () => {
               viewBox="0 0 24 24"
               strokeWidth="2"
               stroke="currentColor"
-              className={`size-6 group-hover:scale-110 transition-transform ${
-                !isExpanded ? "mx-auto" : ""
-              }`}
+              className={`size-6 group-hover:scale-110 transition-transform ${!isExpanded ? "mx-auto" : ""
+                }`}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
             </svg>

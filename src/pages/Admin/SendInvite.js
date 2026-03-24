@@ -127,7 +127,7 @@ const SendInvite = () => {
                             className="px-4 py-2 text-xs font-bold rounded-lg text-white transition-all duration-200 hover:opacity-90"
                             style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                           >
-                            Send Invite
+                            Send Organizer
                           </button>
                         </td>
                       </tr>
@@ -152,7 +152,7 @@ const SendInvite = () => {
             />
 
             <h2 className="text-xl font-extrabold text-gray-900 mb-6">
-              Send Organizer Invite
+              Send Organizer
             </h2>
 
             <form onSubmit={handleSendInvite} className="space-y-5">
@@ -190,7 +190,7 @@ const SendInvite = () => {
                   className="flex-1 py-3 text-white text-sm font-bold rounded-xl transition-all duration-200 hover:opacity-90 disabled:opacity-60"
                   style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                 >
-                  {sending ? "Sending..." : "Send Invite"}
+                  {sending ? "Sending..." : "Send Organizer"}
                 </button>
                 <button
                   type="button"
