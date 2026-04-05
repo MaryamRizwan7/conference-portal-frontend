@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../../components/AdminSidebar";
-import Layout from "../../components/Layout";
 import axios from "axios";
+import DashboardLayout from "../../components/DashboardLayout";
 
 const STATUS_STYLES = {
   approved: "bg-green-50 text-green-800",
@@ -128,153 +127,147 @@ const AdminDashboard = () => {
   const total = (stats.approved ?? 0) + (stats.pending ?? 0) + (stats.rejected ?? 0);
 
   return (
-    <Layout title="Administrator Control Center">
-      <div className="relative flex min-h-screen bg-gray-50">
-        <Sidebar />
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto">
 
-        <div className="flex-1 p-8 lg:p-10">
-          <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+              Admin Dashboard
+            </h1>
+            <p className="text-sm text-gray-400 mt-1">
+              Platform overview — all conference requests
+            </p>
+          </div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                  Admin Dashboard
-                </h1>
-                <p className="text-sm text-gray-400 mt-1">
-                  Platform overview — all conference requests
-                </p>
-              </div>
+          <span
+            className="px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-widest"
+            style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
+          >
+            System Superuser
+          </span>
+        </div>
 
-              <span
-                className="px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-widest"
-                style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
+        {/* Stat Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <StatCard label="Total conferences" value={stats.approved !== null ? total : null} sub="All time" />
+          <StatCard label="Pending requests" value={stats.pending} sub="Awaiting review" subColor="text-amber-600" />
+          <StatCard label="Approved" value={stats.approved} sub="Active conferences" subColor="text-green-700" />
+          <StatCard label="Rejected" value={stats.rejected} sub="Not approved" subColor="text-teal-700" />
+        </div>
+
+        {/* Table + Donut */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Table */}
+          <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-sm font-bold text-gray-800">
+                Recent conference requests
+              </h2>
+
+              <a
+                href="/admindashboard/pending-requests"
+                className="text-xs font-bold text-teal-700 hover:text-teal-800"
               >
-                System Superuser
-              </span>
+                View all
+              </a>
             </div>
 
-            {/* Stat Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <StatCard label="Total conferences" value={stats.approved !== null ? total : null} sub="All time" />
-              <StatCard label="Pending requests" value={stats.pending} sub="Awaiting review" subColor="text-amber-600" />
-              <StatCard label="Approved" value={stats.approved} sub="Active conferences" subColor="text-green-700" />
-              <StatCard label="Rejected" value={stats.rejected} sub="Not approved" subColor="text-teal-700" />
-            </div>
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
+              </div>
+            ) : (
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Conference</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Location</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Submitted</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
+                  </tr>
+                </thead>
 
-            {/* Table + Donut */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <tbody className="divide-y divide-gray-50">
+                  {recent.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-400">
+                        No recent conferences found.
+                      </td>
+                    </tr>
+                  ) : (
+                    recent.map((c, i) => (
+                      <tr key={i} className="hover:bg-gray-50">
+                        <td className="px-6 py-3">
+                          <p className="text-sm font-bold text-gray-900">{c.acronym}</p>
+                          <p className="text-xs text-gray-400">{c.conferenceName}</p>
+                        </td>
 
-              {/* Table */}
-              <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-gray-800">
-                    Recent conference requests
-                  </h2>
+                        <td className="px-6 py-3 text-sm text-gray-500">
+                          {c.city}, {c.country}
+                        </td>
 
-                  <a
-                    href="/admindashboard/pending-requests"
-                    className="text-xs font-bold text-teal-700 hover:text-teal-800"
-                  >
-                    View all
-                  </a>
-                </div>
+                        <td className="px-6 py-3 text-sm text-gray-500">
+                          {c.createdAt ? c.createdAt.slice(0, 10) : "-"}
+                        </td>
 
-                {loading ? (
-                  <div className="flex justify-center py-12">
-                    <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
-                  </div>
-                ) : (
-                  <table className="min-w-full">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Conference</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Location</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Submitted</th>
-                        <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
+                        <td className="px-6 py-3">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[c.status]}`}>
+                            {c.status}
+                          </span>
+                        </td>
                       </tr>
-                    </thead>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
 
-                    <tbody className="divide-y divide-gray-50">
-                      {recent.length === 0 ? (
-                        <tr>
-                          <td colSpan={4} className="px-6 py-8 text-center text-sm text-gray-400">
-                            No recent conferences found.
-                          </td>
-                        </tr>
-                      ) : (
-                        recent.map((c, i) => (
-                          <tr key={i} className="hover:bg-gray-50">
-                            <td className="px-6 py-3">
-                              <p className="text-sm font-bold text-gray-900">{c.acronym}</p>
-                              <p className="text-xs text-gray-400">{c.conferenceName}</p>
-                            </td>
+          {/* Donut */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="text-sm font-bold text-gray-800 mb-6">
+              Status breakdown
+            </h2>
 
-                            <td className="px-6 py-3 text-sm text-gray-500">
-                              {c.city}, {c.country}
-                            </td>
-
-                            <td className="px-6 py-3 text-sm text-gray-500">
-                              {c.createdAt ? c.createdAt.slice(0, 10) : "-"}
-                            </td>
-
-                            <td className="px-6 py-3">
-                              <span className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${STATUS_STYLES[c.status]}`}>
-                                {c.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                )}
+            {stats.approved !== null ? (
+              <DonutChart
+                approved={stats.approved}
+                pending={stats.pending}
+                rejected={stats.rejected}
+              />
+            ) : (
+              <div className="flex justify-center py-8">
+                <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
               </div>
-
-              {/* Donut */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-sm font-bold text-gray-800 mb-6">
-                  Status breakdown
-                </h2>
-
-                {stats.approved !== null ? (
-                  <DonutChart
-                    approved={stats.approved}
-                    pending={stats.pending}
-                    rejected={stats.rejected}
-                  />
-                ) : (
-                  <div className="flex justify-center py-8">
-                    <div className="w-8 h-8 rounded-full border-4 border-teal-600 border-t-transparent animate-spin" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: "Review pending requests", href: "/admindashboard/pending-requests", count: stats.pending, color: "text-amber-600" },
-                { label: "View approved conferences", href: "/admindashboard/all-conferences", count: stats.approved, color: "text-green-700" },
-                { label: "View rejected conferences", href: "/admindashboard/rejected-conferences", count: stats.rejected, color: "text-teal-700" },
-              ].map((link, i) => (
-                <a
-                  key={i}
-                  href={link.href}
-                  className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:shadow-sm hover:border-teal-100 transition-all"
-                >
-                  <span className="text-sm font-bold text-gray-700">{link.label}</span>
-                  <span className={`text-lg font-extrabold ${link.color}`}>
-                    {link.count ?? "—"}
-                  </span>
-                </a>
-              ))}
-            </div>
-
+            )}
           </div>
         </div>
+
+        {/* Quick Links */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { label: "Review pending requests", href: "/admindashboard/pending-requests", count: stats.pending, color: "text-amber-600" },
+            { label: "View approved conferences", href: "/admindashboard/all-conferences", count: stats.approved, color: "text-green-700" },
+            { label: "View rejected conferences", href: "/admindashboard/rejected-conferences", count: stats.rejected, color: "text-teal-700" },
+          ].map((link, i) => (
+            <a
+              key={i}
+              href={link.href}
+              className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:shadow-sm hover:border-teal-100 transition-all"
+            >
+              <span className="text-sm font-bold text-gray-700">{link.label}</span>
+              <span className={`text-lg font-extrabold ${link.color}`}>
+                {link.count ?? "—"}
+              </span>
+            </a>
+          ))}
+        </div>
+
       </div>
-    </Layout>
+    </DashboardLayout>
   );
 };
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
-import toast from "react-hot-toast";
-import axios from "axios";
+import Layout from "../../components/DashboardLayout";
+import Sidebar from "../../components/AdminSidebar";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import Sidebar from "../../components/AdminSidebar";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const UpdateConference = () => {
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ const UpdateConference = () => {
       const { data } = await axios.get("/api/conference/all-conferences");
       setConferences(data);
     } catch (error) {
-      console.error(error);
       toast.error("Error fetching conferences.");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -48,8 +48,8 @@ const UpdateConference = () => {
       setValue("secondaryArea", data.secondaryArea);
       setValue("topics", data.topics);
     } catch (error) {
-      console.log(error);
       toast.error("Error fetching conference details.");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -111,11 +111,7 @@ const UpdateConference = () => {
     try {
       setIsLoading(true);
       setIsModalVisible(false);
-
-      await axios.delete(
-        `/api/conference/delete-conference/${selectedConferenceId}`
-      );
-
+      await axios.delete(`/api/conference/delete-conference/${selectedConferenceId}`);
       toast.success("Conference deleted successfully.");
       setSelectedConferenceId("");
       fetchConferences();
@@ -134,14 +130,11 @@ const UpdateConference = () => {
 
   return (
     <Layout title="ConForum Admin - Edit Conference">
-      <div className="relative flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
-
-        <div className="flex-1 p-8">
+        <main className="flex-1 p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-              Edit Conference
-            </h1>
+            <h1 className="text-3xl font-extrabold text-gray-900">Edit Conference</h1>
             <p className="mt-2 text-gray-500 font-medium">
               Select a conference to update or delete it.
             </p>
@@ -150,7 +143,6 @@ const UpdateConference = () => {
           <div className="max-w-4xl bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             <div className="mb-8">
               <label className={labelClass}>Select Conference</label>
-
               <select
                 onChange={handleConferenceChange}
                 value={selectedConferenceId}
@@ -160,7 +152,6 @@ const UpdateConference = () => {
                 <option value="">
                   {isLoading ? "Loading conferences..." : "-- Choose a conference --"}
                 </option>
-
                 {conferences.map((conf) => (
                   <option key={conf._id} value={conf._id}>
                     {conf.acronym} — {conf.conferenceName}
@@ -182,11 +173,7 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input
-                        type="text"
-                        {...register(name)}
-                        className={inputClass}
-                      />
+                      <input type="text" {...register(name)} className={inputClass} />
                     </div>
                   ))}
 
@@ -198,11 +185,7 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input
-                        type="date"
-                        {...register(name)}
-                        className={inputClass}
-                      />
+                      <input type="date" {...register(name)} className={inputClass} />
                     </div>
                   ))}
 
@@ -212,21 +195,13 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input
-                        type="text"
-                        {...register(name)}
-                        className={inputClass}
-                      />
+                      <input type="text" {...register(name)} className={inputClass} />
                     </div>
                   ))}
 
                   <div className="md:col-span-2">
                     <label className={labelClass}>Topics</label>
-                    <input
-                      type="text"
-                      {...register("topics")}
-                      className={inputClass}
-                    />
+                    <input type="text" {...register("topics")} className={inputClass} />
                   </div>
                 </div>
 
@@ -235,10 +210,7 @@ const UpdateConference = () => {
                     type="submit"
                     disabled={isLoading}
                     className="px-8 py-3 text-white font-bold rounded-xl shadow-lg"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #2D5561, #4B707A)",
-                    }}
+                    style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
                   >
                     {isLoading ? "Updating..." : "Update Conference"}
                   </button>
@@ -257,12 +229,9 @@ const UpdateConference = () => {
           </div>
 
           {isModalVisible && (
-            <ConfirmationModal
-              onConfirm={confirmDelete}
-              onCancel={cancelDelete}
-            />
+            <ConfirmationModal onConfirm={confirmDelete} onCancel={cancelDelete} />
           )}
-        </div>
+        </main>
       </div>
     </Layout>
   );
