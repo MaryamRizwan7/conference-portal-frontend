@@ -14,6 +14,7 @@ const UpdateConference = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [maxResubmissions, setMaxResubmissions] = useState("");
+  const [isUnlimited, setIsUnlimited] = useState(false);
 
   const { register, handleSubmit, setValue } = useForm();
 
@@ -97,7 +98,7 @@ const UpdateConference = () => {
 
       const payload = {
         ...formData,
-        maxResubmissions: Number(maxResubmissions),
+        maxResubmissions: isUnlimited ? 1000 : Number(maxResubmissions),
       };
 
       const { data } = await axios.put(
@@ -247,20 +248,28 @@ const UpdateConference = () => {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className={labelClass}>
-                      Maximum Resubmissions
-                    </label>
+                    <label className={labelClass}>Maximum Resubmissions</label>
 
                     <input
                       type="number"
                       value={maxResubmissions}
-                      onChange={(e) =>
-                        setMaxResubmissions(e.target.value)
-                      }
+                      onChange={(e) => setMaxResubmissions(e.target.value)}
                       className={inputClass}
                       min="0"
                       max="4"
+                      disabled={isUnlimited}
                     />
+                  </div>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isUnlimited}
+                      onChange={(e) => setIsUnlimited(e.target.checked)}
+                    />
+                    <label className="text-sm text-gray-600">
+                      Unlimited resubmissions
+                    </label>
                   </div>
                 </div>
 
