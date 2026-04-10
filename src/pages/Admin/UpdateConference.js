@@ -13,6 +13,7 @@ const UpdateConference = () => {
   const [selectedConferenceId, setSelectedConferenceId] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [maxResubmissions, setMaxResubmissions] = useState("");
 
   const { register, handleSubmit, setValue } = useForm();
 
@@ -32,7 +33,9 @@ const UpdateConference = () => {
   const getSingleConference = async (id) => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`/api/conference/get-conference/${id}`);
+      const { data } = await axios.get(
+        `/api/conference/get-conference/${id}`
+      );
 
       setValue("conferenceName", data.conferenceName);
       setValue("acronym", data.acronym);
@@ -47,6 +50,7 @@ const UpdateConference = () => {
       setValue("primaryArea", data.primaryArea);
       setValue("secondaryArea", data.secondaryArea);
       setValue("topics", data.topics);
+      setMaxResubmissions(data.maxResubmissions || "");
     } catch (error) {
       toast.error("Error fetching conference details.");
       console.error(error);
@@ -81,15 +85,24 @@ const UpdateConference = () => {
         "secondaryArea",
         "topics",
       ].forEach((field) => setValue(field, ""));
+
+      setMaxResubmissions("");
     }
   };
+
 
   const onSubmit = async (formData) => {
     try {
       setIsLoading(true);
+
+      const payload = {
+        ...formData,
+        maxResubmissions: Number(maxResubmissions),
+      };
+
       const { data } = await axios.put(
         `/api/conference/update-conference/${selectedConferenceId}`,
-        formData
+        payload
       );
 
       if (data?.success) {
@@ -100,6 +113,7 @@ const UpdateConference = () => {
       }
     } catch (error) {
       toast.error("Something went wrong.");
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +125,11 @@ const UpdateConference = () => {
     try {
       setIsLoading(true);
       setIsModalVisible(false);
-      await axios.delete(`/api/conference/delete-conference/${selectedConferenceId}`);
+
+      await axios.delete(
+        `/api/conference/delete-conference/${selectedConferenceId}`
+      );
+
       toast.success("Conference deleted successfully.");
       setSelectedConferenceId("");
       fetchConferences();
@@ -126,15 +144,19 @@ const UpdateConference = () => {
 
   const inputClass =
     "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-200 focus:bg-white focus:outline-none transition-all duration-200 shadow-sm hover:border-gray-300 text-sm";
+
   const labelClass = "block text-sm font-bold text-gray-700 mb-1";
 
   return (
     <Layout title="ConForum Admin - Edit Conference">
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
+
         <main className="flex-1 p-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900">Edit Conference</h1>
+            <h1 className="text-3xl font-extrabold text-gray-900">
+              Edit Conference
+            </h1>
             <p className="mt-2 text-gray-500 font-medium">
               Select a conference to update or delete it.
             </p>
@@ -143,6 +165,7 @@ const UpdateConference = () => {
           <div className="max-w-4xl bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             <div className="mb-8">
               <label className={labelClass}>Select Conference</label>
+
               <select
                 onChange={handleConferenceChange}
                 value={selectedConferenceId}
@@ -150,11 +173,14 @@ const UpdateConference = () => {
                 disabled={isLoading}
               >
                 <option value="">
-                  {isLoading ? "Loading conferences..." : "-- Choose a conference --"}
+                  {isLoading
+                    ? "Loading conferences..."
+                    : "-- Choose a conference --"}
                 </option>
+
                 {conferences.map((conf) => (
-                  <option key={conf._id} value={conf._id}>
-                    {conf.acronym} — {conf.conferenceName}
+                  <option key={conf.id} value={conf.id}>
+                    {conf.acronym} — {conf.conference_name}
                   </option>
                 ))}
               </select>
@@ -173,7 +199,11 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input type="text" {...register(name)} className={inputClass} />
+                      <input
+                        type="text"
+                        {...register(name)}
+                        className={inputClass}
+                      />
                     </div>
                   ))}
 
@@ -185,7 +215,11 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input type="date" {...register(name)} className={inputClass} />
+                      <input
+                        type="date"
+                        {...register(name)}
+                        className={inputClass}
+                      />
                     </div>
                   ))}
 
@@ -195,13 +229,38 @@ const UpdateConference = () => {
                   ].map(([label, name]) => (
                     <div key={name}>
                       <label className={labelClass}>{label}</label>
-                      <input type="text" {...register(name)} className={inputClass} />
+                      <input
+                        type="text"
+                        {...register(name)}
+                        className={inputClass}
+                      />
                     </div>
                   ))}
 
                   <div className="md:col-span-2">
                     <label className={labelClass}>Topics</label>
-                    <input type="text" {...register("topics")} className={inputClass} />
+                    <input
+                      type="text"
+                      {...register("topics")}
+                      className={inputClass}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className={labelClass}>
+                      Maximum Resubmissions
+                    </label>
+
+                    <input
+                      type="number"
+                      value={maxResubmissions}
+                      onChange={(e) =>
+                        setMaxResubmissions(e.target.value)
+                      }
+                      className={inputClass}
+                      min="0"
+                      max="4"
+                    />
                   </div>
                 </div>
 
@@ -210,7 +269,10 @@ const UpdateConference = () => {
                     type="submit"
                     disabled={isLoading}
                     className="px-8 py-3 text-white font-bold rounded-xl shadow-lg"
-                    style={{ background: "linear-gradient(135deg, #2D5561, #4B707A)" }}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #2D5561, #4B707A)",
+                    }}
                   >
                     {isLoading ? "Updating..." : "Update Conference"}
                   </button>
@@ -229,7 +291,10 @@ const UpdateConference = () => {
           </div>
 
           {isModalVisible && (
-            <ConfirmationModal onConfirm={confirmDelete} onCancel={cancelDelete} />
+            <ConfirmationModal
+              onConfirm={confirmDelete}
+              onCancel={cancelDelete}
+            />
           )}
         </main>
       </div>
