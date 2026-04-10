@@ -256,7 +256,7 @@ const UpdateConference = () => {
                       onChange={(e) => setMaxResubmissions(e.target.value)}
                       className={inputClass}
                       min="0"
-                      max="4"
+                      max="1000"
                       disabled={isUnlimited}
                     />
                   </div>
